@@ -1,39 +1,6 @@
 import rdkit 
 import torch 
-
-def read_smi_txt(path) :
-    with open(path, 'r') as file : 
-        smi_list = [smi for smi in file.readlines()]
-    return smi_list
-
-
-
-def get_coor(path) :
-    coor_list = []
-    supplier = rdkit.Chem.SDMolSupplier(path)
-    
-    
-    for mol in supplier:
-        print(mol)
-        coor = []
-        if mol is not None:
-            conformer = mol.GetConformer()
-            for atom in mol.GetAtoms():
-                atom_idx = atom.GetIdx()
-                x, y, z = conformer.GetAtomPosition(atom_idx)
-                coor_atom = list((x,y,z))
-                coor.append(coor_atom)
-        coor_list.append(coor)
-
-    # Replace invalid idx
-    for i, coor in enumerate(coor_list):
-        if len(coor) == 0 :
-            if i == 0 :
-                coor_list = coor_list[1:]
-            coor_list[i] = coor_list[i-1]
-
-
-    return coor_list
+import multiprocessing 
 
 def get_dic(smi_list) :
     smi_dic = {'<END>': -1, '<PAD>':0}
@@ -59,6 +26,11 @@ def get_atom_pos(smi) :
     atom_pos = conformer.GetPositions()
     return atom_pos[:count_atom(smi)]
 
+def parallel_f(f, input_list) :
+    pool = multiprocessing.Pool()
+    return pool.map(f, input_list)
+
+
 def count_atom(smi) :
     return rdkit.Chem.MolFromSmiles(smi).GetNumAtoms()
 
@@ -66,6 +38,10 @@ def normalize(coor) :
     x, y, z = coor[0]
     return torch.tensor(coor - [x,y,z])
 
+def pad(coor, longest_coor) :
+    zeros = torch.zeros(longest_coor - coor.size(0), 3)
+    return torch.cat((coor, zeros), dim = 0)
 
-def encode_smi(smi) :
+
+# def encode_smi(smi) :
     
