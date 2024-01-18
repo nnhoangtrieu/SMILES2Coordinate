@@ -45,3 +45,16 @@ def pad(coor, longest_coor) :
 
 # def encode_smi(smi) :
     
+
+
+
+class MyDataset(torch.utils.data.Dataset) : 
+    def __init__(self, smi_list, coor_list) : 
+        self.smi_list = smi_list
+        self.coor_list = coor_list
+
+    def __len__(self) :
+        return len(self.smi_list)
+    
+    def __getitem__(self, idx) :
+        return self.smi_list[idx], self.coor_list[idx]
