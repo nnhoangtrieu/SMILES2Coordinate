@@ -50,7 +50,7 @@ def replace_atom(smi) :
 
 def get_dic(smi_list) :
     smi_dic = {'<P>': 0, '<E>' : 1}
-    i = 3
+    i = 2
     for smi in smi_list :
         for char in smi :
             if char not in smi_dic :
@@ -78,7 +78,7 @@ class MyDataset(torch.utils.data.Dataset) :
         return len(self.smint_list)
     
     def __getitem__(self, idx) :
-        return torch.tensor(self.smint_list[idx],dtype = torch.long, device = device), torch.tensor(self.coor_list[idx], dtype = torch.float, device = device)  
+        return torch.tensor(self.smint_list[idx],dtype = torch.long), torch.tensor(self.coor_list[idx], dtype = torch.float)  
     
 
 

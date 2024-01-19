@@ -68,7 +68,7 @@ class DP_Attention(nn.Module) : # Dot Product Attention
 class Encoder(nn.Module) : 
     def  __init__(self, dim_model, num_block, num_head,  dropout, smi_dic) :
         super(Encoder, self).__init__()
-        self.Embedding = nn.Embedding(len(smi_dic) - 1, dim_model)
+        self.Embedding = nn.Embedding(len(smi_dic), dim_model)
         self.Dropout = nn.Dropout(dropout)
         self.Encoder_Blocks = nn.ModuleList([Encoder_Block(dim_model, num_head, dropout) for _ in range(num_block)])
 
@@ -76,9 +76,8 @@ class Encoder(nn.Module) :
     def forward(self, x) :
 
         x = self.Dropout(self.Embedding(x))
-        print(x.shape)
         for block in self.Encoder_Blocks : 
-            x, last_state, self_attn= block(x)
+            x, last_state, self_attn = block(x)
         
         return x, last_state, self_attn
     
